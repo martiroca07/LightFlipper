@@ -14,35 +14,42 @@
 - Remote-control page added to the desktop shell with directional, OK, and Back controls.
 - App startup and UI smoke tests validated in an offscreen Qt environment.
 - Remote controls now clearly show offline preview state; held buttons return to idle state after release.
-- File Manager identifies its seeded filesystem as offline sample data.
-- Navigation for unimplemented pages is disabled to avoid dead-end interactions.
-- Qt integration tests cover disconnected status, remote button press/release, and unfinished navigation.
+- Sidebar selection is exclusive; Remote Control and File Manager are gated behind a device connection.
+- File Manager no longer presents mock entries as device files; live filesystem transport remains unavailable.
+- Settings persist palette colors, font family, font size, and sidebar visibility.
+- Original pixel-art icons are generated in-app and recolor with the selected accent.
+- Local `.dfu` firmware installation uses the official qFlipper CLI, USB-only gating, format checks, and explicit confirmation.
+- Qt integration tests cover connection gates, button press/release, theme persistence, icons, and firmware format checks.
+- Windows system font fallback is registered without bundling system fonts.
 - Windows EXE startup verified in offscreen mode without a connected Flipper device.
+- GitHub release workflow generates release notes comparing each version tag with the previous release.
+- This public status document is the portable project checkpoint for continuing work from another computer; it must stay free of prompts and secrets.
 
 ## In-progress features
-- Firmware and application management workflows.
+- Application management workflows and physical validation of firmware installation.
 - Deeper remote-control synchronization with live device screens.
 - Live transport protocols for production hardware sessions.
 - Real device-backed file transfer and desktop synchronization.
 
 ## Known limitations
 - Real hardware validation for USB, Bluetooth, and remote-control features remains pending on actual Flipper hardware.
-- The current implementation includes mock-safe validation paths so development can proceed without a physical device.
+- Firmware installation delegates to qFlipper CLI and has not been run against physical hardware in this environment.
+- BLE discovery is implemented at the library layer, but the desktop Settings page currently exposes USB connection only.
 - True live screen synchronization and RPC payload handling still need a hardware-validated transport layer.
 
 ## Outstanding bugs
-- No known defects in the current project foundation or the implemented Bluetooth/remote-control scaffolding.
+- Live file operations, remote-control transport, and firmware update outcomes need physical-device verification.
 
 ## Hardware tests required
 - USB serial device detection on Windows with a real Flipper Zero.
 - Bluetooth device discovery and pairing validation.
 - Remote-control button and screen synchronization against real hardware.
 - Flipper RPC communication through real hardware.
+- qFlipper CLI firmware installation with a known-good `.dfu` and inserted microSD card.
 
 ## Next development tasks
-1. Add richer dashboard widgets and action panels.
-2. Expand the settings center with all user-configurable sections.
-3. Improve the remote-control UI with live screen synchronization and refresh behavior.
-4. Extend the RPC layer with real transport adapters for USB and BLE sessions.
-5. Prepare documentation and packaging for deployment.
-6. Continue into file management and firmware workflows.
+1. Implement hardware-backed RPC and device state discovery.
+2. Implement live Flipper filesystem browsing and transfers.
+3. Validate qFlipper `.dfu` installation on a physical Flipper with microSD.
+4. Add BLE discovery and connection controls to the desktop UI.
+5. Continue app catalog, firmware metadata, and changelog workflows.

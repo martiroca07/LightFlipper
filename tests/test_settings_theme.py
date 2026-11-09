@@ -44,3 +44,14 @@ def test_settings_manager_persists_values(tmp_path):
     assert isinstance(manager.db_path, Path)
     assert manager.db_path == db_path
     assert sqlite3.connect(db_path).execute("SELECT 1").fetchone() == (1,)
+
+
+def test_settings_manager_has_visual_customization_defaults(tmp_path):
+    settings = SettingsManager(tmp_path / "visual-settings.db")
+
+    assert settings.get("theme.accent") == "#FF7A24"
+    assert settings.get("theme.background") == "#111214"
+    assert settings.get("ui.font_size") == 12
+    assert settings.get("ui.sidebar_visible") is True
+
+    settings.close()

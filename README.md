@@ -17,10 +17,13 @@ The project is in active development. Core foundation work, USB/Bluetooth connec
 
 - Qt-based desktop shell with sidebar navigation
 - SQLite-backed settings persistence
+- Customizable accent, background, panel and text colors, font, and sidebar visibility
+- Original pixel-art navigation and action icons
 - USB serial detection and connection handling
 - Bluetooth discovery and connection handling
-- Remote-control input surface
-- File manager browsing and mock-safe filesystem workflows
+- Remote-control controls gated behind an active connection
+- File Manager entry gated behind a connection; live file transfer is not yet implemented
+- Local `.dfu` firmware installation through the official qFlipper CLI over USB
 
 ## Getting started
 
@@ -43,7 +46,9 @@ To generate a deployable Windows executable:
 
 This creates a standalone executable at `dist/LightFlipper.exe` and is also used by the GitHub release workflow.
 
-When a version tag like `v0.1.0` is pushed, GitHub Actions builds the EXE automatically and uploads it to the GitHub Release.
+When a version tag like `v0.1.3` is pushed, GitHub Actions builds the EXE, uploads it to the GitHub Release, and generates release notes comparing the tag with the previous release.
+
+For local firmware installation, install qFlipper and select a compatible `.dfu` file in the Firmware page. LightFlipper requires an active USB connection and asks for confirmation before starting qFlipper CLI. Firmware updates have not yet been validated against physical hardware.
 
 ## Requirements
 

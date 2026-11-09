@@ -6,7 +6,9 @@
 - [x] Implement theme engine
 - [x] Implement settings persistence
 - [x] Add test coverage for settings and themes
-- [ ] Add more configurable theme editor controls
+- [x] Add persistent color and typography customization
+- [x] Add sidebar visibility control
+- [x] Add original pixel-art navigation and action icons
 - [ ] Expand dashboard widgets
 - [ ] Add logging and diagnostics viewer
 
@@ -28,12 +30,12 @@
 - [ ] Refresh optimization and live device frame updates
 
 ## Phase 5: File management
-- [x] File manager model with directory browsing and uploads
-- [x] Rename and delete support for mock-safe device files
-- [x] File Manager page integrated into the desktop shell
+- [x] File Manager page gated on device connection
+- [ ] Implement live device filesystem transport before enabling file actions
 - [ ] Real hardware-backed file transfer synchronization
 
-## Phase 6+: Future work
-- [ ] Firmware management
+## Phase 6+: Firmware and applications
+- [x] Local `.dfu` selection and validation via qFlipper CLI
+- [ ] Validate firmware installation on physical hardware
 - [ ] App management
 - [ ] Wi-Fi Devboard workflows
