@@ -15,9 +15,10 @@
 - App startup and UI smoke tests validated in an offscreen Qt environment.
 
 ## In-progress features
-- File manager and firmware workflows.
+- Firmware and application management workflows.
 - Deeper remote-control synchronization with live device screens.
 - Live transport protocols for production hardware sessions.
+- Real device-backed file transfer and desktop synchronization.
 
 ## Known limitations
 - Real hardware validation for USB, Bluetooth, and remote-control features remains pending on actual Flipper hardware.

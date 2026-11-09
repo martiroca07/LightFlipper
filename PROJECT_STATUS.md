@@ -37,13 +37,18 @@ This document summarizes the current development status of LightFlipper in Engli
 - USB and Bluetooth connection managers now expose a shared `send_rpc()` API.
 - Mock-safe command validation allows test coverage without hardware dependencies.
 
+### Phase 6: File management foundation
+- A mock-safe file manager model was added for directory browsing, uploads, renames, and deletions.
+- The desktop shell now includes a live File Manager page for browsing the device filesystem layout.
+- Directory creation and file listing behavior are covered by automated tests.
+
 ### Validation
 - Unit test suite passes successfully.
 - Qt application bootstrap smoke test passes.
 
 ## In progress
-- File manager and device filesystem browsing.
 - Firmware and application management modules.
+- Live hardware-backed file transfer and device synchronization.
 
 ## Known limitations
 - Real hardware validation is still pending for actual Flipper Zero USB/BLE communication.

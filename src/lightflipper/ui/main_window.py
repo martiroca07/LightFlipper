@@ -6,13 +6,17 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QListWidget,
+    QListWidgetItem,
     QMainWindow,
     QPushButton,
+    QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
 
 from lightflipper.config.settings import SettingsManager
+from lightflipper.file_manager import FlipperFileManager
 from lightflipper.remote import RemoteButton, RemoteController
 from lightflipper.theme import ThemeManager
 
@@ -166,6 +170,63 @@ class RemoteControlPage(QWidget):
         self.status_label.setText(f"Pressed: {names}")
 
 
+class FileManagerPage(QWidget):
+    def __init__(self, manager: FlipperFileManager | None = None) -> None:
+        super().__init__()
+        self.manager = manager or FlipperFileManager()
+        self.upload_file("/nfc/demo.txt", "demo payload")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setSpacing(16)
+
+        title = QLabel("File Manager")
+        title.setStyleSheet("color: #F2F2F2; font-size: 28px; font-weight: 600;")
+        layout.addWidget(title)
+
+        toolbar = QHBoxLayout()
+        refresh = QPushButton("Refresh")
+        refresh.setStyleSheet("background: #202329; border-radius: 8px; padding: 8px 12px; color: #F2F2F2;")
+        refresh.clicked.connect(self.refresh_view)
+
+        create_dir = QPushButton("Create folder")
+        create_dir.setStyleSheet("background: #FF7A24; color: #111214; border-radius: 8px; padding: 8px 12px; font-weight: 600;")
+        create_dir.clicked.connect(self.create_default_folder)
+
+        toolbar.addWidget(refresh)
+        toolbar.addWidget(create_dir)
+        toolbar.addStretch()
+        layout.addLayout(toolbar)
+
+        self.list_widget = QListWidget()
+        self.list_widget.setStyleSheet(
+            """
+            QListWidget {
+                background: #202329;
+                border-radius: 12px;
+                padding: 8px;
+                color: #F2F2F2;
+            }
+            """
+        )
+        layout.addWidget(self.list_widget)
+        self.refresh_view()
+
+    def upload_file(self, path: str, payload: str) -> None:
+        self.manager.upload_file(path, payload)
+
+    def create_default_folder(self) -> None:
+        self.manager.create_directory("custom", "/")
+        self.refresh_view()
+
+    def refresh_view(self) -> None:
+        self.list_widget.clear()
+        entries = self.manager.list_directory("/")
+        for entry in entries:
+            item = QListWidgetItem(f"{entry.name}  ({'folder' if entry.is_directory else entry.extension or 'file'})")
+            self.list_widget.addItem(item)
+
+
 class MainWindow(QMainWindow):
     def __init__(self, settings: SettingsManager | None = None, theme_manager: ThemeManager | None = None) -> None:
         super().__init__()
@@ -205,6 +266,17 @@ class MainWindow(QMainWindow):
         brand.setStyleSheet("color: #FF7A24; font-size: 22px; font-weight: 700; padding: 8px 8px 16px 8px;")
         sidebar_layout.addWidget(brand)
 
+        pages = {
+            "Dashboard": DashboardPage(),
+            "Remote Control": RemoteControlPage(),
+            "File Manager": FileManagerPage(),
+            "Settings": DashboardPage(),
+        }
+
+        self.page_stack = QStackedWidget()
+        for page in pages.values():
+            self.page_stack.addWidget(page)
+
         nav_items = [
             "Dashboard",
             "Remote Control",
@@ -220,9 +292,13 @@ class MainWindow(QMainWindow):
             "Settings",
         ]
 
+        self.nav_map = {}
         for index, item in enumerate(nav_items):
             button = NavButton(item, active=index == 0)
+            if item in pages:
+                button.clicked.connect(lambda checked=False, name=item: self.show_page(name))
             sidebar_layout.addWidget(button)
+            self.nav_map[item] = button
 
         sidebar_layout.addStretch()
         sidebar_layout.addWidget(StatusPanel())
@@ -231,11 +307,19 @@ class MainWindow(QMainWindow):
         content.setStyleSheet("background: #111214;")
         content_layout = QVBoxLayout(content)
         content_layout.setContentsMargins(16, 16, 16, 16)
-        content_layout.addWidget(RemoteControlPage())
+        content_layout.addWidget(self.page_stack)
 
         root.addWidget(sidebar, 1)
         root.addWidget(content, 5)
         self.setCentralWidget(container)
+        self.show_page("Dashboard")
+
+    def show_page(self, name: str) -> None:
+        page_names = ["Dashboard", "Remote Control", "File Manager", "Settings"]
+        if name not in page_names:
+            return
+        page_index = page_names.index(name)
+        self.page_stack.setCurrentIndex(page_index)
 
     def apply_theme(self) -> None:
         current = self.theme_manager.current

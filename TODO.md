@@ -27,8 +27,13 @@
 - [x] Controller buttons and events
 - [ ] Refresh optimization and live device frame updates
 
-## Phase 5+: Future work
-- [ ] File manager
+## Phase 5: File management
+- [x] File manager model with directory browsing and uploads
+- [x] Rename and delete support for mock-safe device files
+- [x] File Manager page integrated into the desktop shell
+- [ ] Real hardware-backed file transfer synchronization
+
+## Phase 6+: Future work
 - [ ] Firmware management
 - [ ] App management
 - [ ] Wi-Fi Devboard workflows
