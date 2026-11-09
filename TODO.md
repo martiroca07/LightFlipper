@@ -22,11 +22,14 @@
 - [x] BLE scanning and pairing foundation
 - [x] Bluetooth connection handling and validation
 - [x] RPC transport layer abstraction
+- [ ] Add BLE discovery and connection controls to the desktop UI
 - [ ] Connection handling and retries
 
 ## Phase 4: Remote control
 - [x] Screen synchronization UI scaffold
 - [x] Controller buttons and events
+- [ ] Send remote button press/release over the active USB/BLE device transport
+- [ ] Verify remote button events and live screen updates over BLE on hardware
 - [ ] Refresh optimization and live device frame updates
 
 ## Phase 5: File management

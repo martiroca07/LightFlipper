@@ -33,7 +33,7 @@
 
 ## In-progress features
 - Application management workflows and physical validation of firmware installation.
-- Deeper remote-control synchronization with live device screens.
+- Remote-control transport over the active USB/BLE session, including press/release events and live screen synchronization.
 - Live transport protocols for production hardware sessions.
 - Real device-backed file transfer and desktop synchronization.
 
@@ -41,6 +41,7 @@
 - Real hardware validation for USB, Bluetooth, and remote-control features remains pending on actual Flipper hardware.
 - Firmware installation delegates to qFlipper CLI and has not been run against physical hardware in this environment.
 - BLE discovery is implemented at the library layer, but the desktop Settings page currently exposes USB connection only.
+- Remote-control buttons currently update only local UI state; no live RPC commands are sent over BLE or USB yet.
 - True live screen synchronization and RPC payload handling still need a hardware-validated transport layer.
 
 ## Outstanding bugs
@@ -50,12 +51,14 @@
 - USB serial device detection on Windows with a real Flipper Zero.
 - Bluetooth device discovery and pairing validation.
 - Remote-control button and screen synchronization against real hardware.
+- Remote-control button press/release delivery over BLE and screen updates from the device.
 - Flipper RPC communication through real hardware.
 - qFlipper CLI firmware installation with a known-good `.dfu` and inserted microSD card.
 
 ## Next development tasks
-1. Implement hardware-backed RPC and device state discovery.
-2. Implement live Flipper filesystem browsing and transfers.
-3. Validate qFlipper `.dfu` installation on a physical Flipper with microSD.
-4. Add BLE discovery and connection controls to the desktop UI.
-5. Continue app catalog, firmware metadata, and changelog workflows.
+1. Implement BLE discovery and connection controls in the desktop UI.
+2. Implement a hardware-backed RPC transport and route remote button press/release over active USB/BLE.
+3. Validate remote screen synchronization and controls over BLE on a physical Flipper.
+4. Implement live Flipper filesystem browsing and transfers.
+5. Validate qFlipper `.dfu` installation on a physical Flipper with microSD.
+6. Continue app catalog, firmware metadata, and changelog workflows.
