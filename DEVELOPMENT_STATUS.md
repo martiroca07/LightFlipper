@@ -13,6 +13,11 @@
 - Remote-control controller model implemented, with screen buffer tracking and button state handling.
 - Remote-control page added to the desktop shell with directional, OK, and Back controls.
 - App startup and UI smoke tests validated in an offscreen Qt environment.
+- Remote controls now clearly show offline preview state; held buttons return to idle state after release.
+- File Manager identifies its seeded filesystem as offline sample data.
+- Navigation for unimplemented pages is disabled to avoid dead-end interactions.
+- Qt integration tests cover disconnected status, remote button press/release, and unfinished navigation.
+- Windows EXE startup verified in offscreen mode without a connected Flipper device.
 
 ## In-progress features
 - Firmware and application management workflows.

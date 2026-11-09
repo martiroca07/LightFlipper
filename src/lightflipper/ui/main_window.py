@@ -46,6 +46,11 @@ class NavButton(QPushButton):
                 background: rgba(255, 122, 36, 0.12);
                 border: 1px solid rgba(255, 122, 36, 0.35);
             }
+            QPushButton:disabled {
+                background: transparent;
+                color: #62666E;
+                border: 1px solid transparent;
+            }
             """
         )
 
@@ -120,7 +125,7 @@ class RemoteControlPage(QWidget):
         title.setStyleSheet("color: #F2F2F2; font-size: 28px; font-weight: 600;")
         layout.addWidget(title)
 
-        screen = QLabel("Screen sync ready")
+        screen = QLabel("No live device screen")
         screen.setAlignment(Qt.AlignCenter)
         screen.setMinimumHeight(180)
         screen.setStyleSheet("background: #202329; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; color: #F2F2F2; font-size: 16px;")
@@ -164,7 +169,7 @@ class RemoteControlPage(QWidget):
 
         layout.addWidget(pad)
 
-        status = QLabel("No buttons pressed")
+        status = QLabel("Offline preview")
         status.setStyleSheet("color: #9298A2;")
         self.status_label = status
         layout.addWidget(status)
@@ -183,10 +188,10 @@ class RemoteControlPage(QWidget):
     def update_status(self) -> None:
         pressed = self.controller.get_pressed_buttons()
         if not pressed:
-            self.status_label.setText("No buttons pressed")
+            self.status_label.setText("Offline preview")
             return
         names = ", ".join(button.value.title() for button in pressed)
-        self.status_label.setText(f"Pressed: {names}")
+        self.status_label.setText(f"Preview: {names}")
 
 
 class FileManagerPage(QWidget):
@@ -202,6 +207,10 @@ class FileManagerPage(QWidget):
         title = QLabel("File Manager")
         title.setStyleSheet("color: #F2F2F2; font-size: 28px; font-weight: 600;")
         layout.addWidget(title)
+
+        preview_label = QLabel("Sample filesystem (offline preview)")
+        preview_label.setStyleSheet("color: #9298A2;")
+        layout.addWidget(preview_label)
 
         toolbar = QHBoxLayout()
         refresh = QPushButton("Refresh")
@@ -376,6 +385,9 @@ class MainWindow(QMainWindow):
             button = NavButton(item, active=index == 0)
             if item in pages:
                 button.clicked.connect(lambda checked=False, name=item: self.show_page(name))
+            else:
+                button.setEnabled(False)
+                button.setToolTip("Not available yet")
             sidebar_layout.addWidget(button)
             self.nav_map[item] = button
 
