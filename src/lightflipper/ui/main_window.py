@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from lightflipper.config.settings import SettingsManager
+from lightflipper.device.connection import DeviceConnectionManager
 from lightflipper.file_manager import FlipperFileManager
 from lightflipper.remote import RemoteButton, RemoteController
 from lightflipper.theme import ThemeManager
@@ -50,8 +51,9 @@ class NavButton(QPushButton):
 
 
 class StatusPanel(QWidget):
-    def __init__(self) -> None:
+    def __init__(self, connection_manager: DeviceConnectionManager | None = None) -> None:
         super().__init__()
+        self.connection_manager = connection_manager or DeviceConnectionManager()
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 16, 16, 16)
 
@@ -67,6 +69,23 @@ class StatusPanel(QWidget):
         layout.addWidget(self.status_label)
         layout.addWidget(self.device_label)
         layout.addWidget(self.firmware_label)
+        self.refresh()
+
+    def refresh(self) -> None:
+        summary = self.connection_manager.get_device_summary()
+        connection_type = summary.get("connection_type", "disconnected")
+        if connection_type == "usb":
+            label = "Connected via USB"
+        elif connection_type == "bluetooth":
+            label = "Connected via Bluetooth"
+        elif connection_type == "connecting":
+            label = "Connecting"
+        else:
+            label = "Disconnected"
+
+        self.status_label.setText(label)
+        self.device_label.setText(f"Device: {summary.get('model', 'None')}")
+        self.firmware_label.setText(f"Firmware: {summary.get('firmware', 'unavailable')}")
 
 
 class DashboardPage(QWidget):
@@ -227,11 +246,71 @@ class FileManagerPage(QWidget):
             self.list_widget.addItem(item)
 
 
+class SettingsPage(QWidget):
+    def __init__(self, connection_manager: DeviceConnectionManager | None = None) -> None:
+        super().__init__()
+        self.connection_manager = connection_manager or DeviceConnectionManager()
+        self.status_label = QLabel("Connection status: disconnected")
+        self.status_label.setStyleSheet("color: #F2F2F2; font-size: 18px; font-weight: 600;")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setSpacing(16)
+
+        title = QLabel("Settings")
+        title.setStyleSheet("color: #F2F2F2; font-size: 28px; font-weight: 600;")
+        layout.addWidget(title)
+
+        layout.addWidget(self.status_label)
+
+        actions = QHBoxLayout()
+        usb_btn = QPushButton("Connect USB mock")
+        usb_btn.setStyleSheet("background: #FF7A24; color: #111214; border-radius: 8px; padding: 10px 16px; font-weight: 600;")
+        usb_btn.clicked.connect(lambda: self._connect_usb())
+
+        bt_btn = QPushButton("Connect BLE mock")
+        bt_btn.setStyleSheet("background: #202329; border-radius: 8px; padding: 10px 16px; color: #F2F2F2;")
+        bt_btn.clicked.connect(lambda: self._connect_ble())
+
+        disconnect_btn = QPushButton("Disconnect")
+        disconnect_btn.setStyleSheet("background: #3B3F46; border-radius: 8px; padding: 10px 16px; color: #F2F2F2;")
+        disconnect_btn.clicked.connect(self._disconnect)
+
+        actions.addWidget(usb_btn)
+        actions.addWidget(bt_btn)
+        actions.addWidget(disconnect_btn)
+        actions.addStretch()
+        layout.addLayout(actions)
+
+        info = QLabel("LightFlipper keeps the active device state in the shell and can be expanded with persisted presets later.")
+        info.setWordWrap(True)
+        info.setStyleSheet("color: #9298A2; background: #202329; border-radius: 12px; padding: 16px;")
+        layout.addWidget(info)
+        self.refresh()
+
+    def refresh(self) -> None:
+        summary = self.connection_manager.get_device_summary()
+        self.status_label.setText(f"Connection status: {summary.get('connection_type', 'disconnected')}")
+
+    def _connect_usb(self) -> None:
+        self.connection_manager.connect_usb("COM7", mock_mode=True)
+        self.refresh()
+
+    def _connect_ble(self) -> None:
+        self.connection_manager.connect_bluetooth("AA:BB:CC:DD:EE:02", mock_mode=True)
+        self.refresh()
+
+    def _disconnect(self) -> None:
+        self.connection_manager.disconnect()
+        self.refresh()
+
+
 class MainWindow(QMainWindow):
     def __init__(self, settings: SettingsManager | None = None, theme_manager: ThemeManager | None = None) -> None:
         super().__init__()
         self.settings = settings or SettingsManager()
         self.theme_manager = theme_manager or ThemeManager()
+        self.connection_manager = DeviceConnectionManager()
 
         self.setWindowTitle("LightFlipper")
         self.resize(self.settings.get("window.width", 1280), self.settings.get("window.height", 820))
@@ -270,7 +349,7 @@ class MainWindow(QMainWindow):
             "Dashboard": DashboardPage(),
             "Remote Control": RemoteControlPage(),
             "File Manager": FileManagerPage(),
-            "Settings": DashboardPage(),
+            "Settings": SettingsPage(self.connection_manager),
         }
 
         self.page_stack = QStackedWidget()
@@ -301,7 +380,8 @@ class MainWindow(QMainWindow):
             self.nav_map[item] = button
 
         sidebar_layout.addStretch()
-        sidebar_layout.addWidget(StatusPanel())
+        self.status_panel = StatusPanel(self.connection_manager)
+        sidebar_layout.addWidget(self.status_panel)
 
         content = QWidget()
         content.setStyleSheet("background: #111214;")
@@ -320,6 +400,7 @@ class MainWindow(QMainWindow):
             return
         page_index = page_names.index(name)
         self.page_stack.setCurrentIndex(page_index)
+        self.status_panel.refresh()
 
     def apply_theme(self) -> None:
         current = self.theme_manager.current

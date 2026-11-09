@@ -32,6 +32,19 @@ python -m venv .venv
 .venv\Scripts\python.exe -m lightflipper.app
 ```
 
+## Windows release build
+
+To generate a deployable Windows executable:
+
+```bash
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe scripts/build_release.py
+```
+
+This creates a standalone executable at `dist/LightFlipper.exe` and is also used by the GitHub release workflow.
+
+When a version tag like `v0.1.0` is pushed, GitHub Actions builds the EXE automatically and uploads it to the GitHub Release.
+
 ## Requirements
 
 - Python 3.12+

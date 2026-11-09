@@ -6,3 +6,4 @@
 - Added theme engine and default palette.
 - Created the main app shell and navigation layout.
 - Added automated tests for theme and settings behavior.
+- Added Windows EXE build script and GitHub release workflow.
