@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,6 +29,17 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller
+
+      - name: Generate release notes
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          previous_tag="$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)"
+          if [ -n "$previous_tag" ]; then
+            python scripts/generate_release_notes.py "$GITHUB_REF_NAME" "$previous_tag"
+          else
+            python scripts/generate_release_notes.py "$GITHUB_REF_NAME"
+          fi
 
       - name: Build release EXE
         shell: bash
@@ -43,4 +56,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/LightFlipper.exe
-          generate_release_notes: true
+          body_path: release-notes.md

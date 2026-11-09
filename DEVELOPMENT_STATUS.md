@@ -22,8 +22,14 @@
 - Qt integration tests cover connection gates, button press/release, theme persistence, icons, and firmware format checks.
 - Windows system font fallback is registered without bundling system fonts.
 - Windows EXE startup verified in offscreen mode without a connected Flipper device.
-- GitHub release workflow generates release notes comparing each version tag with the previous release.
+- GitHub release workflow publishes the matching `CHANGELOG.md` bullets plus a compare link to the previous tag; the generator has regression tests.
 - This public status document is the portable project checkpoint for continuing work from another computer; it must stay free of prompts and secrets.
+
+## Continuity notes
+- Before tagging a release, add a dated version section with user-facing bullets to `CHANGELOG.md` and bump `pyproject.toml`.
+- Run `python scripts/generate_release_notes.py <current-tag> <previous-tag>` to preview the exact GitHub release body.
+- Keep `.ai/` and `dist/` ignored; do not commit private handoff notes or generated executables.
+- Do not describe File Manager, remote transport, or firmware installation as hardware-verified until tested on a physical Flipper.
 
 ## In-progress features
 - Application management workflows and physical validation of firmware installation.

@@ -46,7 +46,7 @@ To generate a deployable Windows executable:
 
 This creates a standalone executable at `dist/LightFlipper.exe` and is also used by the GitHub release workflow.
 
-When a version tag like `v0.1.3` is pushed, GitHub Actions builds the EXE, uploads it to the GitHub Release, and generates release notes comparing the tag with the previous release.
+When a version tag like `v0.1.3` is pushed, GitHub Actions builds the EXE and publishes notes from that version's `CHANGELOG.md` section plus a comparison link to the previous tag.
 
 For local firmware installation, install qFlipper and select a compatible `.dfu` file in the Firmware page. LightFlipper requires an active USB connection and asks for confirmation before starting qFlipper CLI. Firmware updates have not yet been validated against physical hardware.
 
